@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダミー広告表示サイト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            font-family: sans-serif;
+        }
+        
+        .ad-container {
+            position: absolute;
+            background-color: white;
+            border: 2px solid #ccc;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .ad-container:hover {
+            transform: scale(1.02);
+            z-index: 10000 !important;
+        }
+
+        .ad-header {
+            background-color: #e0e0e0;
+            padding: 2px 5px;
+            font-size: 10px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ad-close {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        .ad-close:hover {
+            color: red;
+        }
+
+        .ad-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            text-align: center;
+        }
+
+        .ad-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #ddd;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Overlay for Huge Ads */
+        #huge-ad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 4000;
+            pointer-events: none;
+        }
+
+        #status-bar {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 20000;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="huge-ad-overlay"></div>
+    <div id="ad-wrapper"></div>
+    <div id="status-bar">準備中...</div>
+
+    <script>
+        const adImages = [
+            "https://www.lemon8-app.com/seo/image?item_id=7450477786210402821&index=0&sign=e46cbcbb517f78531bcf7fe5072c3781"
+        ];
+
+        const adWrapper = document.getElementById('ad-wrapper');
+        const statusBar = document.getElementById('status-bar');
+        const overlay = document.getElementById('huge-ad-overlay');
+        
+        let isHugeAdTime = false;
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // 広告本体をクリックした時のアクション
+        function handleAdClick(adElement) {
+            // ブラウザ純正ポップアップ
+            confirm("Do you love Yaju Senpai?");
+            adElement.remove();
+            fillWithAds(50);
+        }
+
+        // 広告生成
+        function createAd(size = 250) {
+            const ad = document.createElement('div');
+            ad.className = 'ad-container';
+            if (size >= 500) {
+                ad.setAttribute('data-huge', 'true');
+            }
+
+            const width = size;
+            const height = size;
+            
+            const posX = getRandomInt(0, window.innerWidth - width);
+            const posY = getRandomInt(0, window.innerHeight - height);
+
+            ad.style.width = `${width}px`;
+            ad.style.height = `${height}px`;
+            ad.style.left = `${posX}px`;
+            ad.style.top = `${posY}px`;
+
+            if (size >= 500) {
+                ad.style.zIndex = 5001; // 固定で前面へ
+            } else {
+                ad.style.zIndex = getRandomInt(1, 100);
+            }
+
+            ad.innerHTML = `
+                <div class="ad-header">
+                    <span>${size >= 500 ? '🔥 限定動画広告 🔥' : '広告'}</span>
+                    <span class="ad-close" onclick="event.stopPropagation(); this.parentElement.parentElement.remove(); fillWithAds(50)">×</span>
+                </div>
+                <div class="ad-content" onclick="handleAdClick(this.parentElement)">
+                    <img src="${adImages[0]}" alt="ad" class="ad-image" onerror="this.style.display='none'">
+                </div>
+            `;
+
+            return ad;
+        }
+
+        function fillWithAds(count, size = 250) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    adWrapper.appendChild(createAd(size));
+                }, i * 30);
+            }
+        }
+
+        function startCycles() {
+            // 60秒に1回巨大広告イベント
+            setInterval(() => {
+                if (!isHugeAdTime) {
+                    activateHugeAdTime();
+                }
+            }, 60000); 
+
+            // 30秒に1回ブラウザ純正ポップアップ (confirm)
+            setInterval(() => {
+                confirm("Do you love Yaju Senpai?");
+            }, 30000);
+        }
+
+        function activateHugeAdTime() {
+            isHugeAdTime = true;
+            overlay.style.display = 'block';
+            statusBar.innerText = "巨大広告表示中... (30秒)";
+            statusBar.style.color = "#ff4444";
+
+            // 中央に1個だけ表示
+            const centerAd = createAd(500);
+            centerAd.style.left = `${(window.innerWidth - 500) / 2}px`;
+            centerAd.style.top = `${(window.innerHeight - 500) / 2}px`;
+            adWrapper.appendChild(centerAd);
+
+            // 30秒後に終了
+            setTimeout(() => {
+                isHugeAdTime = false;
+                overlay.style.display = 'none';
+                statusBar.innerText = "通常モード";
+                statusBar.style.color = "white";
+
+                // 巨大広告を削除
+                const hugeAds = document.querySelectorAll('.ad-container[data-huge="true"]');
+                hugeAds.forEach(ad => ad.remove());
+            }, 30000);
+        }
+
+        window.onload = () => {
+            fillWithAds(15); 
+            
+            // 通常広告の補充ループ
+            setInterval(() => {
+                const normalAdCount = document.querySelectorAll('.ad-container:not([data-huge="true"])').length;
+                if(normalAdCount < 20 && !isHugeAdTime) {
+                     adWrapper.appendChild(createAd(250));
+                }
+            }, 4000);
+
+            startCycles();
+        };
+
+        window.addEventListener('resize', () => {
+        });
+    </script>
+</body>
+</html>
